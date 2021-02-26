@@ -17,7 +17,8 @@ router.register(r'transactions', views.TransactionViewSet)
 
 urlpatterns = [
     # path('', views.index, name='index'),
-    path('', include(router.urls)),
+    path('org', views.OrganizationList.as_view(), name='organizationlist'),
+    path('api/', include(router.urls)),
     # TODO find a way to integrate with router
     path('organization_scoreboard/', views.organization_scoreboard)
 ]

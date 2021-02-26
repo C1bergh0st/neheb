@@ -7,12 +7,8 @@ from rest_framework import permissions
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 
-from .models import *
-from .serializers import *
-
-
-def index(request):
-    return HttpResponse("Hello, world. You're at the polls index.")
+from core.models import *
+from core.serializers import *
 
 
 class OrganizationViewSet(viewsets.ModelViewSet):
