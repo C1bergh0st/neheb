@@ -3,7 +3,7 @@ from colorfield.fields import ColorField
 
 
 class Organization(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256, unique=True, primary_key=True)
     first_ribbon = models.ForeignKey('Ribbon', on_delete=models.PROTECT, null=True, blank=True, related_name='first')
     second_ribbon = models.ForeignKey('Ribbon', on_delete=models.PROTECT, null=True, blank=True,  related_name='second')
     third_ribbon = models.ForeignKey('Ribbon', on_delete=models.PROTECT, null=True, blank=True,  related_name='third')
@@ -17,15 +17,16 @@ class Organization(models.Model):
             if attendee.enabled:
                 for transaction in Transaction.objects.filter(owner=attendee):
                     score += transaction.amount
-        return score;
+        return score
 
 
 class Ribbon(models.Model):
-    color = ColorField(default='#FFFFFF', primary_key=True)
+    name = models.CharField(max_length=256, primary_key=True)
+    color = ColorField(default='#FFFFFF')
     weight = models.DecimalField(max_digits=5, decimal_places=4, default=1)
 
 class Attendee(models.Model):
-    name = models.CharField(max_length=256, unique=True)
+    name = models.CharField(max_length=256, unique=True, primary_key=True)
     organization = models.ForeignKey(Organization, on_delete=models.PROTECT)
     # if this attendee is currently frozen (frozen means no changes to this account can occur)
     frozen = models.BooleanField(default=False)
@@ -43,11 +44,10 @@ class Tag(models.Model):
 # to group items
 class ItemType(models.Model):
     name = models.CharField(max_length=256, primary_key=True)
-    pass
 
 class Item(models.Model):
     name = models.CharField(max_length=256, primary_key=True)
-    pass
+    type = models.ForeignKey(ItemType, on_delete=models.PROTECT)
 
 class Transaction(models.Model):
     owner = models.ForeignKey(Attendee, on_delete=models.PROTECT)
