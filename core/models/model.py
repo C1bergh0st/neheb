@@ -19,6 +19,22 @@ class Organization(models.Model):
                     score += transaction.amount
         return score
 
+    def getSVG(self):
+        WIDTH = 9999
+        HEIGHT = 150
+        start = '<svg width="{}" height="{}" class="flag">'.format(WIDTH, HEIGHT)
+        end = '</svg>'
+        ribbons = [self.first_ribbon, self.second_ribbon, self.third_ribbon, self.fourth_ribbon, self.fifth_ribbon]
+        elements = []
+        ypos = 0
+        for ribbon in ribbons:
+            if ribbon is not None:
+                base = '<rect y="{y:d}" width="{width}" height="{height:d}" style="fill:{color}" />'
+                height = int(HEIGHT * ribbon.weight)
+                elements.append(base.format(y=ypos, height=height, color=ribbon.color, width=WIDTH))
+                ypos += height
+
+        return start + '\n'.join(elements) + end
 
 class Ribbon(models.Model):
     name = models.CharField(max_length=256, primary_key=True)
