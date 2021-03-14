@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+
+{% block content %}
+<style>
+    .flag {
+        width: 100%;
+    }
+    .score1 {
+        color: #FFD700;
+    }
+
+    .score2 {
+        color: #C0C0C0;
+    }
+
+    .score3 {
+        color: #CD7F32;
+    }
+
+</style>
+<div class="container bg-dark text-light">
+    <div class="row align-items-center" style="text-align:center">
+        <h1>Highscore:</h1>
+    </div>
+    {% for org in scoreboard %}
+    <a href="/org/{{org.name}}">
+        <div class="row align-items-center justify-content-center" style="font-size: 2em; text-align:center">
+            {% if forloop.counter <= 3 %}
+            <div class="score{{ forloop.counter }} col-1 p-0" style="font-size: 2em">
+            {% else %}
+            <div class="score col-1 p-0" style="font-size: 1.5em">
+            {% endif %}
+                {{ forloop.counter }}.
+            </div>
+            <div class="col-1 p-0" style="text-align:right">
+                {{ org.score }}
+            </div>
+            <div class="col-1 p-0">
+                🍺
+            </div>
+            <div class="col-3 m-0 p-0" >
+                {{ org.getSVG|safe }}
+            </div>
+            <div class="col" style="text-align: center">
+                {{ org.name }}
+            </div>
+        </div>
+    </a>
+    <div class="mt-3"></div>
+    {% endfor %}
+</div>
+<script>
+    setInterval(() => { location.reload() }, 2000);
+</script>
+{% endblock %}

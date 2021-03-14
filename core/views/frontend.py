@@ -3,6 +3,8 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 from core.models import *
 from django.views.generic import TemplateView, DetailView, ListView
+import json;
+from core.serializers import OrganizationSerializer
 
 
 #class OrganizationList(APIView):
@@ -22,10 +24,22 @@ class OrganizationView(DetailView):
         context = super().get_context_data()
         return context
 
+
 class OrganizationListView(ListView):
     model = Organization
     ordering = ['-name']
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data()
+        return context
+
+
+class ScoreboardView(TemplateView):
+    template_name = "core/scoreboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data()
+        scoreboard = sorted(Organization.objects.all(), key=lambda t: -t.score)
+        context["scoreboard"] = scoreboard
+        context["json"] = json.dumps(OrganizationSerializer(scoreboard, many=True).data)
         return context
