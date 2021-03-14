@@ -20,6 +20,7 @@ urlpatterns = [
     path('org/', views.OrganizationListView.as_view(), name='organization_list'),
     path('org/<str:pk>/', views.OrganizationView.as_view(), name='organization'),
     path('highscore/', views.ScoreboardView.as_view(), name='scoreboard'),
+    path('history/', views.UserView.as_view(), name='history'),
     path('api/', include(router.urls)),
     # TODO find a way to integrate with router
     path('organization_scoreboard/', views.organization_scoreboard)

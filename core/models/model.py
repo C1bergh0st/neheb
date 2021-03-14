@@ -1,5 +1,8 @@
 from django.db import models
 from colorfield.fields import ColorField
+from django.dispatch import receiver
+from django.db.models.signals import post_save
+import random
 
 
 class Organization(models.Model):
@@ -48,6 +51,21 @@ class Attendee(models.Model):
     frozen = models.BooleanField(default=False)
     # if the transaction of this member should count for his organization
     enabled = models.BooleanField(default=True)
+    token = models.CharField(max_length=256, null=True, blank=True)
+
+    def score(self):
+        score = 0
+        if self.enabled:
+            for transaction in Transaction.objects.filter(owner=self):
+                score += transaction.amount
+        return score
+
+@receiver(post_save, sender=Attendee)
+def check_for_token(sender, **kwargs):
+    instance = kwargs.get('instance')
+    if instance.token is None or instance.token == "":
+        instance.token = str(random.randint(0, 999999))
+        instance.save()
     pass
 
 # for identification purposes
