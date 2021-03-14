@@ -2,8 +2,8 @@ from django.db import models
 from colorfield.fields import ColorField
 from django.dispatch import receiver
 from django.db.models.signals import post_save
-import random
-
+import random, json
+from datetime import datetime, timedelta
 
 class Organization(models.Model):
     name = models.CharField(max_length=256, unique=True, primary_key=True)
@@ -59,6 +59,40 @@ class Attendee(models.Model):
             for transaction in Transaction.objects.filter(owner=self):
                 score += transaction.amount
         return score
+
+    def cummulative_since_first(self):
+        transactions = Transaction.objects.filter(owner=self).order_by('-date')
+        score = 0
+        list = [score]
+        date = upperbound(transactions.first().date)
+        for transaction in transactions:
+            nextDate = upperbound(transaction.date)
+            diff = date - nextDate
+            if diff.total_seconds() < 3600:
+                score += transaction.amount
+                list.pop()
+                list.append(score)
+            else:
+                units = (diff.seconds / 3600) + diff.days * 24 - 1
+                list.extend([score] * int(units))
+                score += transaction.amount
+                list.append(score)
+            date = nextDate
+        return json.dumps(list)
+
+
+    def oldest_transaction(self):
+        transactions = Transaction.objects.filter(owner=self).order_by('-date')
+        if transactions.exists():
+            return upperbound(transactions.first().date).isoformat()
+        return "2020-01-01-00:00:01"
+
+def upperbound(date):
+    offset = timedelta(hours=0)
+    if date.hour == 23:
+        offset = timedelta(hours=1)
+    return datetime(date.year, date.month, date.day, hour=date.hour) + offset
+
 
 @receiver(post_save, sender=Attendee)
 def check_for_token(sender, **kwargs):

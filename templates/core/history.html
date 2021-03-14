@@ -1,18 +1,30 @@
 {% extends "base.html" %}
+{% load crispy_forms_tags %}
 
 {% block content %}
-
+<style>
+    .form-group {
+        margin-bottom: 0.5em;
+    }
+</style>
 <div class="container">
     {% if form %}
-    <form action="#" method="post">
-    {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
+    <div class="row">
+        <div class="col">
+            <form action="#" method="post">
+                {% csrf_token %}
+                {{ form|crispy }}
+            <input class="btn btn-primary" type="submit" value="Submit">
+        </div>
+    </div>
     {% endif %}
     {% if attendee %}
         <div>
-            {{ attendee.name }}
-            {{ attendee.score }}
+            <div class="row mt-4 mb-4" style="font-size=2em">
+                <div class="col" style="text-align:center">
+                    Nutzer {{ attendee.name }} hat bisher {{ attendee.score }} 🍺 gekauft/getrunken
+                </div>
+            </div>
             <canvas id="myChart" width="400" height="400"></canvas>
         </div>
     {% endif %}
@@ -26,45 +38,45 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js@2.9.4/dist/Chart.min.js" integrity="sha256-t9UJPrESBeG2ojKTIcFLPGF7nHi2vEc7f5A2KpH/UBU=" crossorigin="anonymous"></script>
 <script>
 function toDay(day){
-    let ar = ["Mo", "Di", "Mi", "Do", "Fr", "Sa", "So"];
+    let ar = ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"];
     return ar[day];
 }
 var ctx = document.getElementById('myChart').getContext('2d');
 
 //THIS IS IMPORTANT
+let test = {{ attendee.cummulative_since_first }};
 let data = [1, 4, 8, 9, 14, 25];
-let start = new Date()
+data = test;
+let datestring = "{{ attendee.oldest_transaction }}";
+let start = new Date(datestring)
+let initialStart = new Date(datestring);
 
 let labels = [];
-let color = 'rgba(255, 99, 132, 1)';
+let color = 'rgba(255, 255, 255, 1)';
 let colors = [];
 for (let i = 0; i < data.length; i++){
     colors.push(color);
     start.setTime(start.getTime() + (1*60*60*1000));
-    labels.push(toDay(start.getUTCDay()) + "-" + start.getUTCHours());
+    labels.push(toDay(start.getUTCDay()) + "-" + start.getHours() + "Uhr");
 }
 var myChart = new Chart(ctx, {
     type: 'line',
     data: {
         labels: labels,
         datasets: [{
-            label: "",
+            label: "Bier getrunken (kummulativ)",
+            lineTension: 0,
             data: data,
             backgroundColor: [
-                'rgba(255, 99, 132, 0.2)',
+                'rgba(145, 145, 237, 0.2)',
             ],
             borderColor: colors,
             borderWidth: 1
         }]
     },
     options: {
-        scales: {
-            yAxes: [{
-                ticks: {
-                    beginAtZero: true
-                }
-            }]
-        }
+        lineTension: 0,
+        cubicInterpolationMode: 'default',
     }
 });
 </script>
