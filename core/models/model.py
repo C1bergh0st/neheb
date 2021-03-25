@@ -4,6 +4,8 @@ from django.dispatch import receiver
 from django.db.models.signals import post_save
 import random, json
 from datetime import datetime, timedelta
+from django.core.exceptions import ValidationError
+from django.utils.translation import gettext_lazy as _
 
 class Organization(models.Model):
     name = models.CharField(max_length=256, unique=True, primary_key=True)
@@ -105,6 +107,7 @@ def check_for_token(sender, **kwargs):
 # for identification purposes
 class Tag(models.Model):
     # TODO add the id method
+    value = models.CharField(max_length=1024, primary_key=True, unique=True)
     attendee = models.ForeignKey(Attendee, on_delete=models.PROTECT)
     comment = models.CharField(max_length=1024, blank=True)
     pass
@@ -121,7 +124,16 @@ class Transaction(models.Model):
     owner = models.ForeignKey(Attendee, on_delete=models.PROTECT)
     item = models.ForeignKey(Item, on_delete=models.PROTECT)
     amount = models.IntegerField()
-    # use personal_amount to seperate bought and consumed Items
-    personal_amount = models.IntegerField()
     date = models.DateTimeField(auto_now_add=True)
     comment = models.CharField(max_length=1024, blank=True)
+
+def validate32(value):
+    if len(value) != 32:
+        raise ValidationError(
+            _('%(value) does not have length 32'),
+            params={'value': value},
+        )
+class Secret(models.Model):
+    value = models.CharField(max_length=32, unique=True, validators=[validate32])
+    note = models.CharField(max_length=1024, blank=True, null=True, help_text="Note where this secret is being used")
+

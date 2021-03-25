@@ -44,12 +44,9 @@ function toDay(day){
 var ctx = document.getElementById('myChart').getContext('2d');
 
 //THIS IS IMPORTANT
-let test = {{ attendee.cummulative_since_first }};
-let data = [1, 4, 8, 9, 14, 25];
-data = test;
+let data = {{ attendee.cummulative_since_first }};
 let datestring = "{{ attendee.oldest_transaction }}";
 let start = new Date(datestring)
-let initialStart = new Date(datestring);
 
 let labels = [];
 let color = 'rgba(255, 255, 255, 1)';

@@ -23,5 +23,6 @@ urlpatterns = [
     path('history/', views.UserView.as_view(), name='history'),
     path('api/', include(router.urls)),
     # TODO find a way to integrate with router
-    path('organization_scoreboard/', views.organization_scoreboard)
+    path('organization_scoreboard/', views.organization_scoreboard),
+    path('transaction/', views.TransactionView.as_view(), name='transaction')
 ]

@@ -25,7 +25,7 @@ SECRET_KEY = '0a^98cb#c8&=$s*4j^eka2faoiwgxh71bm2glzo75bc7f%nt8c'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['192.168.0.88', 'localhost', '0.0.0.0']
 
 
 # Application definition
@@ -41,6 +41,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'colorfield',
     'crispy_forms',
+    'pinax.eventlog',
 ]
 
 CRISPY_TEMPLATE_PACK = 'bootstrap4'
